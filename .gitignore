@@ -1,0 +1,20 @@
+# Ambientes Python locais
+/.venv/
+/venv/
+
+# Cache e resultados locais de ferramentas
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+/.coverage
+/coverage.xml
+/htmlcov/
+
+# Artefatos de empacotamento
+/build/
+/dist/
+*.egg-info/
+
+# Saídas locais geradas pela demo; os templates e fixtures permanecem rastreados
+/examples/demo/out/
+/examples/demo/.work/

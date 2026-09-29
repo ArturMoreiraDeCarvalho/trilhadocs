@@ -1,0 +1,11 @@
+schema_version = 1
+
+[paths]
+inventory = "inventory.jsonl"
+source_root = "sources"
+output_dir = "out"
+
+[build]
+path_limit = 185
+max_workers = 2
+create_master = false
