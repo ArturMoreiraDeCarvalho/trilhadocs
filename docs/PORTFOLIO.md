@@ -1,6 +1,6 @@
 # Narrativa de portfólio
 
-Este texto descreve uma demonstração técnica de portfólio. Ajuste a narrativa para refletir com precisão sua contribuição individual; não apresente o projeto como produto usado por clientes ou como prova de conformidade legal.
+Este texto descreve uma demonstração técnica de portfólio, feita como projeto pessoal com desenvolvimento assistido por agentes de IA (plano e especificação em [`docs/superpowers/`](superpowers/)). Não é um produto usado por clientes nem prova de conformidade legal.
 
 ## Resumo
 
@@ -24,17 +24,23 @@ TrilhaDocs demonstra um pipeline local para organizar documentos contábeis a pa
 
 ## Texto de apresentação para LinkedIn
 
-**Título do projeto:** TrilhaDocs — pipeline local verificável para documentos contábeis
+**Título do projeto:** TrilhaDocs — pacotes verificáveis de documentos contábeis (Python)
 
-**Descrição sugerida:**
+**Descrição:**
 
-> Desenvolvi o TrilhaDocs como projeto de portfólio para demonstrar um fluxo local de organização de documentos relacionados a cargas contábeis. A CLI valida inventários e arquivos, planeja caminhos compatíveis com extração no Windows, gera pacotes ZIP com manifests e confere a cobertura e a integridade dos artefatos. A demonstração usa exclusivamente dados sintéticos e documenta limites de privacidade e segurança: controles técnicos podem apoiar práticas alinhadas à LGPD, mas não substituem avaliação jurídica, autorização, gestão de acesso ou políticas de retenção.
+> Projeto pessoal, com dados sintéticos e desenvolvimento assistido por agentes de IA: CLI Python local que valida o inventário de uma carga de documentos contábeis, organiza capas e anexos em ZIPs por empresa e divisão e confere a integridade do resultado.
+>
+> • Quatro comandos: validate (configuração TOML e inventário JSONL tipados, tamanho, SHA-256 e estrutura dos PDFs), preview, build (ZIPs atômicos e retomáveis, com manifests e journal) e verify (reabre os pacotes e compara com o inventário).
+> • Journal com minimização de dados e limites de LGPD documentados.
+> • pydantic, typer, pypdf, pytest e ruff; CI no GitHub Actions em Ubuntu e Windows, com Python 3.11 e 3.12.
+>
+> Organiza e verifica documentos; não extrai dados do conteúdo dos PDFs.
 
-## Texto para a seção “About” do GitHub
+## Seção “About” do GitHub
 
-**Descrição sugerida:** `CLI Python local para validar inventários contábeis, organizar documentos em ZIPs verificáveis e conferir integridade. Demo sintética, sem conexão com sistemas reais.`
+**Descrição:** `CLI Python local que valida o inventário de documentos contábeis, empacota capas e anexos em ZIPs verificáveis e confere integridade (SHA-256). Dados sintéticos.`
 
-**Tópicos sugeridos:** `python`, `cli`, `accounting`, `data-integrity`, `auditability`, `privacy-by-design`, `lgpd`, `synthetic-data`
+**Tópicos:** `python`, `cli`, `accounting`, `data-integrity`, `auditability`, `privacy-by-design`, `lgpd`, `synthetic-data`, `pydantic`, `pytest`
 
 Licença escolhida para o projeto: MIT. O tópico `lgpd` indica o tema demonstrado; não significa certificação ou garantia de conformidade. Consulte [Segurança](../SECURITY.md) sobre o canal privado de vulnerabilidades.
 
