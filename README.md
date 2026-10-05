@@ -4,6 +4,12 @@
 
 O projeto apresenta controles de integridade e escolhas de privacidade que podem apoiar uma conversa sobre LGPD. Ele não certifica nem garante conformidade com a lei.
 
+> **English summary.** TrilhaDocs is a personal portfolio project: a local Python CLI (pydantic, typer, pypdf) that validates the inventory of an accounting document batch, packages cover sheets and attachments into ZIP files with manifests, and independently verifies coverage and integrity (size and SHA-256). Builds are atomic and resumable, and the journal minimizes sensitive data. It ships with pytest tests, ruff checks and CI on Ubuntu and Windows with Python 3.11 and 3.12. The demo uses synthetic data only. It organizes and verifies documents; it does not extract data from their content.
+
+## Motivação
+
+Em rotinas de fechamento contábil, capas e anexos costumam ser reunidos e entregues por empresa e divisão. O difícil é provar que nada ficou de fora e que os arquivos entregues são os mesmos da origem. TrilhaDocs trata esse problema com inventário tipado, hashes, manifestos e uma verificação separada do empacotamento. Ele organiza e verifica documentos; não extrai dados do conteúdo dos PDFs.
+
 ## O que o projeto demonstra
 
 - Validação tipada de configuração TOML e inventário JSONL.
@@ -24,6 +30,22 @@ flowchart LR
 ```
 
 Todas as etapas são executadas localmente com as permissões da conta que iniciou o processo. O modo de demonstração não contém dados de produção.
+
+## Arquitetura
+
+O código fica em `src/trilhadocs/` e separa cada responsabilidade em um módulo:
+
+| Módulo | Responsabilidade |
+| --- | --- |
+| `config.py`, `models.py`, `inventory.py` | Configuração TOML e esquema tipado (pydantic) do inventário JSONL. |
+| `paths.py`, `planning.py` | Resolução segura de caminhos, nomes de saída, agrupamento por empresa/divisão e preflight. |
+| `hashing.py`, `pdf_validation.py` | Conferência de tamanho e SHA-256 e validação estrutural dos PDFs. |
+| `packaging.py` | Escrita atômica dos ZIPs, manifests, resumo e retomada por checkpoints. |
+| `journal.py`, `privacy.py` | Journal JSONL append-only e redação de valores sensíveis reconhecíveis. |
+| `verification.py` | Leitura independente dos ZIPs produzidos e comparação com o inventário. |
+| `cli.py` | Comandos (typer) e respostas JSON resumidas. |
+
+Detalhes em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Requisitos
 
@@ -71,6 +93,29 @@ python -m trilhadocs verify --config ../trilhadocs-demo/config.toml
 
 Também é possível chamar o entry point instalado como `trilhadocs` em vez de `python -m trilhadocs`.
 
+### Saída de exemplo
+
+Execução da demonstração sintética (uma linha JSON por comando):
+
+```text
+$ python -m trilhadocs validate --config ../trilhadocs-demo/config.toml
+{"archive_count":1,"max_path_chars":103,"member_count":3,"required_bytes":55296,"status":"VALID"}
+$ python -m trilhadocs preview --config ../trilhadocs-demo/config.toml
+{"archive_count":1,"max_path_chars":103,"member_count":3,"required_bytes":55296,"status":"READY"}
+$ python -m trilhadocs build --config ../trilhadocs-demo/config.toml
+{"archive_count":1,"member_count":3,"output_bytes":2186,"status":"COMPLETE"}
+$ python -m trilhadocs verify --config ../trilhadocs-demo/config.toml
+{"archive_count":1,"issues":[],"member_count":3,"output_bytes":2186,"valid":true}
+```
+
+Arquivos gerados em `../trilhadocs-demo/out`:
+
+```text
+Demo Fictícia - Unidade Demo.zip
+.trilhadocs-journal.jsonl
+.trilhadocs-summary.json
+```
+
 ### O que cada comando faz
 
 - `validate` valida configuração e inventário, faz o preflight e confere tamanho, SHA-256 e estrutura dos PDFs referenciados. Não cria nem remove a saída.
@@ -90,6 +135,17 @@ Os comandos emitem uma linha JSON resumida. Os estados de sucesso são:
 | `verify` válido | `valid: true` | `0` |
 
 `build` pode informar `status: "PARTIAL"`; esse resultado retorna código `3` e não representa sucesso completo. Configuração, inventário ou plano inválido retornam código `2` e `status: "INVALID_INPUT"`. Falha no preflight, divergência de conteúdo, falha de build ou verificação inválida retornam código `3`; os estados incluem `PREFLIGHT_FAILURE`, `INTEGRITY_FAILURE` e `BUILD_FAILURE`, ou `valid: false` em `verify`. Mensagens normais da CLI são resumidas e não mostram nomes de conta nem caminhos.
+
+## Testes e qualidade
+
+```sh
+pytest
+ruff check src tests
+ruff format --check src tests
+python -m build
+```
+
+A suíte tem testes unitários (`tests/unit`) e de integração (`tests/integration`), incluindo a demonstração completa. O [workflow de CI](.github/workflows/ci.yml) roda lint, formatação, testes e build em Ubuntu e Windows, com Python 3.11 e 3.12. No Windows, alguns testes de symlink são pulados quando a conta não tem esse privilégio.
 
 ## Limites de uso
 
